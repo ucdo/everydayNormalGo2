@@ -12,13 +12,14 @@ func main() {
 	//fmt.Println(s)
 	//fmt.Println(x)
 	//fmt.Println(len(s), cap(s))
-	for k := range a {
-		fmt.Printf("%p \n", &a[k])
-	}
-	fmt.Printf("%p\n", &a)
+	//for k := range a {
+	//	fmt.Printf("%p \n", &a[k])
+	//}
+	//fmt.Printf("%p\n", &a)
 
-	kuorong()
-	copy2()
+	//kuorong()
+	//copy2()
+	del()
 }
 
 func kuorong() {
@@ -43,8 +44,16 @@ func kuorong() {
 
 func copy2() {
 	x := []int{1, 2, 3}
+	//var s []int
 	s := make([]int, len(x), cap(x))
 	copy(s, x)
 	fmt.Printf("%p \n", x)
 	fmt.Printf("%p \n", s)
+	fmt.Println(s)
+}
+
+func del() {
+	x := []int{1, 2, 3}
+	x = append(x[:1], x[2:]...)
+	fmt.Println(x)
 }
