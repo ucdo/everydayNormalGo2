@@ -19,5 +19,22 @@
     2. make([]int) 
     3. 数组切片 
     4. 切片再切片
+
+### string
+1. 字符串时不可变的。尝试修改字符串会导致编译错误
+2. 通过复制一份string副本进行修改
+    ```go
+    package main
+    import "fmt"
+    func main(){
+        s := "123123"
+        b := []byte(s)
+        b[0] = 'x'
+        fmt.Println(s) // 123123
+        fmt.Println(b) // x23123
+    }
+    ```
+3. 
+
 ### for range
 1. for range slice/map时,创建了一个新的变量来存储当前迭代的元素的副本
