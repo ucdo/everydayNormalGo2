@@ -40,3 +40,30 @@ func CreateTodoTable(c *gin.Context) {
 
 	return
 }
+
+func TodoList(c *gin.Context) {
+	db, err := model.Conn()
+
+	if err != nil {
+		errStr := fmt.Sprintf("Connection error: %v", err)
+		c.JSON(200, gin.H{
+			"message": errStr,
+		})
+		return
+	}
+
+	var res []model.Task
+	tx := db.First(&res)
+	if tx.Error != nil {
+		c.JSON(200, gin.H{
+			"message": tx.Error,
+		})
+		return
+	}
+
+	c.JSON(200, gin.H{
+		"message": tx.Error,
+		"data":    res,
+	})
+
+}

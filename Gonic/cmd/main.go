@@ -14,6 +14,7 @@ func main() {
 	})
 
 	router.GET("/ping", handler.CreateTodoTable)
+	router.GET("list", handler.TodoList)
 
 	router.Run()
 }
