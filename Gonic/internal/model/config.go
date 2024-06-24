@@ -2,16 +2,19 @@ package model
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"os"
+	"path/filepath"
+	"runtime"
 )
 
 var db *gorm.DB
 
 type Config struct {
-	User     int    `json:"user"`
+	User     string `json:"user"`
 	PassWord string `json:"password"`
 	Host     string `json:"host"`
 	Port     int    `json:"port"`
@@ -20,8 +23,17 @@ type Config struct {
 
 func getConfig() (*Config, error) {
 	var conf *Config
-	path := "../configs.json"
-	// check file exist
+
+	// you cant write file path like ./config
+	// can only use runtime to find the file
+	// the enter point is which the main func run
+	_, filename, _, ok := runtime.Caller(0)
+	if !ok {
+		return nil, errors.New("file not exist")
+	}
+
+	path := filepath.Join(filepath.Dir(filename), "config.json")
+
 	file, err := os.ReadFile(path)
 	if err != nil {
 		return conf, err
