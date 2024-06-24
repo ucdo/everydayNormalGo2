@@ -1,4 +1,4 @@
-##
+## Golang
 
 ### array
 1. [数据的拷贝是值拷贝，不是地址](./Guru/array/array1.go)
@@ -38,3 +38,8 @@
 
 ### for range
 1. for range slice/map时,创建了一个新的变量来存储当前迭代的元素的副本
+
+
+## postgresql
+### 数据类型
+1. int后面没有长度限制 如果像mysql 写 int(1) 属于语法错误

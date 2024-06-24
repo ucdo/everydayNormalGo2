@@ -1,6 +1,7 @@
 package main
 
 import (
+	"Gonic/internal/handler"
 	"github.com/gin-gonic/gin"
 )
 
@@ -11,5 +12,8 @@ func main() {
 			"message": "Welcome to the Todo List API built with Gin",
 		})
 	})
+
+	router.GET("/ping", handler.CreateTodoTable)
+
 	router.Run()
 }
