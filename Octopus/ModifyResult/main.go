@@ -62,15 +62,15 @@ func main() {
 	}
 
 	type sqlCon struct {
-		Name         string  `json:"name"`
-		Score        float32 `json:"score"`
-		FactorId     int     `json:"factor_id"`
-		ConclusionId int     `json:"conclusion_id"`
-		Mark         string  `json:"mark"`
-		Reference    string  `json:"reference"`
-		Comment      string  `json:"comment"`
-		Advice       string  `json:"advice"`
-		GraphShow    int     `json:"graph_show"`
+		Name         string `json:"name"`
+		Score        any    `json:"score"`
+		FactorId     int    `json:"factor_id"`
+		ConclusionId int    `json:"conclusion_id"`
+		Mark         string `json:"mark"`
+		Reference    string `json:"reference"`
+		Comment      string `json:"comment"`
+		Advice       string `json:"advice"`
+		GraphShow    int    `json:"graph_show"`
 	}
 
 	var resx []result
@@ -100,16 +100,20 @@ func main() {
 	for _, x := range resx {
 		var s []*sqlCon
 		needModify := false
-		json.Unmarshal([]byte(x.Conclusion), &s)
-		for _, xx := range s {
+
+		err := json.Unmarshal([]byte(x.Conclusion), &s)
+		if err != nil {
+			panic(err)
+		}
+		for key, xx := range s {
 			_, ok := cmap[xx.ConclusionId]
 			if !ok {
 				continue
 			}
 
 			needModify = true
-			xx.Mark = cmap[xx.ConclusionId].Mark
-			xx.Comment = cmap[xx.ConclusionId].Ctx
+			s[key].Mark = cmap[xx.ConclusionId].Mark
+			s[key].Comment = cmap[xx.ConclusionId].Ctx
 		}
 
 		if needModify {
@@ -119,6 +123,7 @@ func main() {
 			}
 			updatex[x.ID] = string(marshal)
 		}
+
 	}
 
 	tx, err := db.Begin()
