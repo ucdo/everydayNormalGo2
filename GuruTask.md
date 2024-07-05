@@ -19,7 +19,7 @@
 5. 证书的部署成功验证(这里api一般都支持)
 
 ### 关于证书的归滚
-1. 通过 domain/yyyymmhh 保存证书
+1. 通过 domain/yyyymmdd 保存证书
 2. 数据库证书网站一对多
 3. 最新的一条作为当前证书
 4. 全查出来让用户自己选择
@@ -45,11 +45,16 @@
    2. 对接支付
    3. 订单
    4. 退费
+6. 关于下单
+   1. 全部走下单流程
+   2. 免费的让她0元购，直接返回支付成功就是，这里主要校验，不要看价格是0元就0元
+   3. 好吧一定要注意验证价格
+   4. 
 
 ### 数据库设计
 
 大概就是需要一个注册页面来注册。以及分别保存阿里云和七牛云的注册信息并加以区分。
-#### 用户表
+#### 用户表 users
 
 |     字段名     |      类型      |   描述   | 是否为NULL |          备注          |
 |:-----------:|:------------:|:------:|:-------:|:--------------------:|
@@ -61,11 +66,25 @@
 |   mobile    | varchar(128) |  手机号   |    y    |        作为通知手段        |
 |    email    | varchar(128) |   邮箱   |    y    |        作为通知手段        |
 |   status    |     int      |   状态   |    x    |          -           |
-| create_time | VARCHAR(14)  |  创建时间  |    x    |          -           |
-| update_time | VARCHAR(14)  |  更新时间  |    x    |          -           |
-| delete_time | VARCHAR(14)  | 删除时间时间 |    y    |          -           |
+| create_time |  timestamp   |  创建时间  |    x    |          -           |
+| update_time |  timestamp   |  更新时间  |    x    |          -           |
+| delete_time |  timestamp   | 删除时间时间 |    y    |          -           |
 
-#### 类别表 
+
+#### 类别基础表 categories
+
+|     字段名     |      类型      |  描述  | 是否为NULL |          备注           |
+|:-----------:|:------------:|:----:|:-------:|:---------------------:|
+|     id      |    serial    | 自增id |    x    |           -           |
+|    name     | varchar(255) |  名字  |    x    | ali_oss/qi`niu_cdn... |
+|    desc     | varchar(255) |  简述  |    y    |                       |
+|   pre_id    |     int      | 上级id |    x    |           -           |
+|    pres     | varchar(255) | 所有上级 |    x    |         快速查询          |
+|   status    |     int      |  状态  |    x    |           -           |
+| create_time |  timestamp   | 创建时间 |    y    |           -           |
+| update_time |  timestamp   | 更新时间 |    y    |           -           |
+
+#### 类别表 category_info
 
 |     字段名     |      类型      |   描述   | 是否为NULL |         备注         |
 |:-----------:|:------------:|:------:|:-------:|:------------------:|
@@ -75,24 +94,24 @@
 | access_key  | varchar(255) | 第三方密码  |    y    |    看有没有必要做填充加解密    | 
 |    auth     |     int      | 是否需要验证 |    x    | 需要鉴权，access两个都需要填写 | 
 |   status    |     int      |   状态   |    x    |         -          |
-| create_time | VARCHAR(14)  |  创建时间  |    y    |         -          |
-| update_time | VARCHAR(14)  |  更新时间  |    y    |         -          |
+| create_time |  timestamp   |  创建时间  |    y    |         -          |
+| update_time |  timestamp   |  更新时间  |    y    |         -          |
 1. 这里包括但是不限于，oss、cdn
 
-#### 用户网站表
+#### 用户网站表 user_domains
 
-|     字段名     |      类型      |   描述   | 是否为NULL |      备注      |
-|:-----------:|:------------:|:------:|:-------:|:------------:|
-|     id      |    serial    |  自增id  |    x    |      -       | 
-|   user_id   |     int      | 用户表的id |    x    |      -       |
-|   domain    | varchar(255) |   网站   |    x    |      -       |
-| category_id | varchar(255) |   类别   |    x    |   oss/cdn    |
-|   status    |     int      |   状态   |    x    |      -       |
-| create_time | VARCHAR(14)  |  创建时间  |    y    |      -       |
-| update_time | VARCHAR(14)  |  更新时间  |    y    |      -       |
+|       字段名        |      类型      |   描述   | 是否为NULL | 备注 |
+|:----------------:|:------------:|:------:|:-------:|:--:|
+|        id        |    serial    |  自增id  |    x    | -  | 
+|     user_id      |     int      | 用户表的id |    x    | -  |
+|      domain      | varchar(255) |   网站   |    x    | -  |
+| category_info_id | varchar(255) |   类别   |    x    | -  |
+|      status      |     int      |   状态   |    x    | -  |
+|   create_time    |  timestamp   |  创建时间  |    y    | -  |
+|   update_time    |  timestamp   |  更新时间  |    y    | -  |
 
 
-#### 资源表
+#### 资源表 resources
 
 |       字段名        |      类型      |   描述   | 是否为NULL |       备注       |
 |:----------------:|:------------:|:------:|:-------:|:--------------:|
@@ -102,49 +121,51 @@
 | private_key_name | varchar(255) | 私钥文件名  |    x    |                | 
 |     location     | varchar(128) |   位置   |    x    | basePath/网站名字/ | 
 |      status      |     int      |   状态   |    x    |       -        |
-|   create_time    | VARCHAR(14)  |  创建时间  |    x    |       -        |
-|   update_time    | VARCHAR(14)  | 删除时间时间 |    y    |       -        |
+|   create_time    |  timestamp   |  创建时间  |    x    |       -        |
+|   update_time    |  timestamp   | 删除时间时间 |    y    |       -        |
 
-#### 网站/资源表
+#### 网站/资源表 domain_resource
 
-|     字段名     |      类型      |  描述  | 是否为NULL |      备注      |
-|:-----------:|:------------:|:----:|:-------:|:------------:|
-|     id      |    serial    | 自增id |    x    |      -       | 
-|  domain_id  |     int      | 网站id |    x    |      -       |
-| resource_id |     int      | 资源id |    x    |      -       |
-|   status    |     int      |  状态  |    x    |      -       |
-| create_time | VARCHAR(14)  | 创建时间 |    y    |      -       |
-| update_time | VARCHAR(14)  | 更新时间 |    y    |      -       |
+|     字段名     |    类型     |  描述  | 是否为NULL | 备注 |
+|:-----------:|:---------:|:----:|:-------:|:--:|
+|     id      |  serial   | 自增id |    x    | -  | 
+|  domain_id  |    int    | 网站id |    x    | -  |
+| resource_id |    int    | 资源id |    x    | -  |
+|   status    |    int    |  状态  |    x    | -  |
+| create_time | timestamp | 创建时间 |    y    | -  |
+| update_time | timestamp | 更新时间 |    y    | -  |
 
-#### 规格表-主表
+#### 规格表-主表 sku
 
-|     字段名     |      类型      |  描述  | 是否为NULL |      备注      |
-|:-----------:|:------------:|:----:|:-------:|:------------:|
-|     id      |    serial    | 自增id |    x    |      -       | 
-|    name     |     int      | 规格名称 |    x    |      -       |
-|    desc     | VARCHAR(255) | 规格名称 |    x    |      -       |
-|   status    |     int      |  状态  |    x    |      -       |
-| create_time | VARCHAR(14)  | 创建时间 |    y    |      -       |
-| update_time | VARCHAR(14)  | 更新时间 |    y    |      -       |
+|     字段名     |      类型      |  描述  | 是否为NULL |       备注        |
+|:-----------:|:------------:|:----:|:-------:|:---------------:|
+|     id      |    serial    | 自增id |    x    |        -        | 
+|    name     |     int      | 规格名称 |    x    |        -        |
+|    desc     | VARCHAR(255) | 规格名称 |    x    |        -        |
+|    path     | VARCHAR(255) | 规格名称 |    x    | 记录上下级关系。不要则递归生成 |
+|   status    |     int      |  状态  |    x    |        -        |
+| create_time |  timestamp   | 创建时间 |    y    |        -        |
+| update_time |  timestamp   | 更新时间 |    y    |        -        |
 
-#### 规格表-价格
+#### 规格表-价格 sku_value
 
-|     字段名     |      类型      |  描述  | 是否为NULL |     备注      |
-|:-----------:|:------------:|:----:|:-------:|:-----------:|
-|     id      |    serial    | 自增id |    x    |      -      | 
-|   sku_id    |     int      | 规格id |    x    |      -      |
-|    value    |     int      |  价格  |    x    | 整数保存，缩放100倍 |
-|   status    |     int      |  状态  |    x    |      -      |
-| create_time | VARCHAR(14)  | 创建时间 |    y    |      -      |
-| update_time | VARCHAR(14)  | 更新时间 |    y    |      -      |
+|     字段名     |    类型     |  描述  | 是否为NULL |      备注       |
+|:-----------:|:---------:|:----:|:-------:|:-------------:|
+|     id      |  serial   | 自增id |    x    |       -       | 
+|   sku_id    |    int    | 规格id |    x    |       -       |
+|    value    |    int    |  价格  |    x    |  整数保存，缩放100倍  |
+|    stock    |    int    |  库存  |    x    | 拆分商品的库存到各个规格上 |
+|   status    |    int    |  状态  |    x    |       -       |
+| create_time | timestamp | 创建时间 |    y    |       -       |
+| update_time | timestamp | 更新时间 |    y    |       -       |
 
-#### 商品规格表
+#### 商品规格表 商品 <-> 多对多 goods_sku
 
-|     字段名     |      类型      |  描述  | 是否为NULL |     备注      |
-|:-----------:|:------------:|:----:|:-------:|:-----------:|
-|     id      |    serial    | 自增id |    x    |      -      | 
-|   sku_id    |     int      | 规格id |    x    |      -      |
-|    value    |     int      |  价格  |    x    | 整数保存，缩放100倍 |
-|   status    |     int      |  状态  |    x    |      -      |
-| create_time | VARCHAR(14)  | 创建时间 |    y    |      -      |
-| update_time | VARCHAR(14)  | 更新时间 |    y    |      -      |
+|     字段名     |    类型     |  描述  | 是否为NULL |     备注      |
+|:-----------:|:---------:|:----:|:-------:|:-----------:|
+|     id      |  serial   | 自增id |    x    |      -      | 
+|   sku_id    |    int    | 规格id |    x    |      -      |
+|    value    |    int    |  价格  |    x    | 整数保存，缩放100倍 |
+|   status    |    int    |  状态  |    x    |      -      |
+| create_time | timestamp | 创建时间 |    y    |      -      |
+| update_time | timestamp | 更新时间 |    y    |      -      |
