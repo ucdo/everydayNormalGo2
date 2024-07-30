@@ -18,9 +18,10 @@ type mysqlConfig struct {
 }
 
 type conclusions struct {
-	Id   int    `json:"id"`
-	Ctx  string `json:"ctx"`
-	Mark string `json:"mark"`
+	Id     int    `json:"id"`
+	Ctx    string `json:"ctx"`
+	Mark   string `json:"mark"`
+	Advice string `json:"advice"`
 }
 
 type modify struct {
@@ -86,15 +87,17 @@ func main() {
 	}
 
 	cmap := make(map[int]struct {
-		Mark string
-		Ctx  string
+		Mark   string
+		Ctx    string
+		Advice string
 	})
 	updatex := make(map[int]string)
 	for _, conclusion := range cnf.Modify.Conclusions {
 		cmap[conclusion.Id] = struct {
-			Mark string
-			Ctx  string
-		}{Mark: conclusion.Mark, Ctx: conclusion.Ctx}
+			Mark   string
+			Ctx    string
+			Advice string
+		}{Mark: conclusion.Mark, Ctx: conclusion.Ctx, Advice: conclusion.Advice}
 	}
 
 	for _, x := range resx {
@@ -114,6 +117,7 @@ func main() {
 			needModify = true
 			s[key].Mark = cmap[xx.ConclusionId].Mark
 			s[key].Comment = cmap[xx.ConclusionId].Ctx
+			s[key].Advice = cmap[xx.ConclusionId].Advice
 		}
 
 		if needModify {

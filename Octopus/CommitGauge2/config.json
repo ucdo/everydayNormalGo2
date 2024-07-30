@@ -1,0 +1,23 @@
+{
+	"mysql": {
+		"user": "root",
+		"password":"root" ,
+		"host": "localhost",
+		"port": "3310",
+		"dbname": "jlp2",
+		"cycleTime":10
+	},
+	"require": {
+		"domain": "http://127.0.0.1",
+		"port": 259,
+		"login_uri": "/login",
+		"commit_uri": "/results_calculated"
+	},
+	"user": [
+
+	],
+	"gauge": [
+
+	]
+
+}
