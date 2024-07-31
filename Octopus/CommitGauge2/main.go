@@ -3,10 +3,10 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"golang.org/x/sync/semaphore"
+	"io"
 	"log"
+	"net/http"
 	"os"
-	"sync"
 )
 
 // mysql 数据库配置
@@ -59,24 +59,6 @@ type evaluates struct {
 	MeasureId int `json:"measure_id"`
 }
 
-var (
-	maxWorkers = 2 // 最大并发数
-	sema       = semaphore.NewWeighted(int64(maxWorkers))
-	wg         sync.WaitGroup
-)
-
-var index = 0
-
-var lock = sync.RWMutex{}
-
-func increment() int {
-	lock.Lock()
-	defer lock.Unlock() // 确保在函数退出时释放锁，防止死锁
-	tmp := index
-	index++
-	return tmp
-}
-
 type questions struct {
 	Id      int    `json:"id"`
 	Score   string `json:"score"`
@@ -101,10 +83,25 @@ func main() {
 	// 获取到了待做的报告，以及量表，下一步就是构造题目了。
 	evl := getEvaluate()
 	fmt.Printf("%#v", evl)
+
 	me := getMeasures(evl)
-	fmt.Printf("%#v", me)
-	for k, v := range *me {
-		fmt.Printf("%s %d", k, len(v))
+
+	// no buffer channel
+	c := make(chan *http.Response)
+	for _, e := range *evl {
+		if m := (*me)[e.MeasureId]; len(m) > 0 {
+			go commit(e, &m, c)
+		}
+	}
+
+	select {
+	case msg := <-c:
+		body, err := io.ReadAll((*msg).Body)
+		if err != nil {
+			fmt.Println("Error reading response body:", err)
+			return
+		}
+		log.Printf("%#v", string(body))
 	}
 }
 
