@@ -1,8 +1,36 @@
-## Golang
+# Golang
+
+## 基础
+
+### 变量
+1. 定义:
+    1. var x int = 1
+    2. var x1  = 1
+    3. x := 1
+    4. := 只能在函数内使用
+
+### 简单类型
+1. 空值 nil
+2. 整型 int(取决于操作系统), int8, int16, int32, int64, uint8, uint16...
+3. 浮点 float32 float64
+4. 字节 byte = uint8
+5. 字符串 string
+6. 布尔 ture false
+
+### 编码
+1. 默认是 UTF8编码
+2. 英文或者ASCII码占一个字节
+3. 中文占3个字节
+4. 操作中文使用 for k,v := range rune(x){} 
+5. len(x) 实际上是返回的是字节数
+6. 判断是否包含UTF8字符：utf8.ValidString(x)
+7. string 转 rune []rune(x)
+
 
 ### array
 1. [数据的拷贝是值拷贝，不是地址](./Guru/array/array1.go)
 2. 数组是一块连续内存，通过偏移量来获取后面的值
+3. 数组的长度不能变
 
 ### slice
 1. 底层还是数组，只不过是slice的struct的header指向了这个底层数组的地址
@@ -34,12 +62,16 @@
         fmt.Println(b) // x23123
     }
     ```
-3. 
 
 ### for range
 1. for range slice/map时,创建了一个新的变量来存储当前迭代的元素的副本
 
+## 进阶
 
-## postgresql
-### 数据类型
-1. int后面没有长度限制 如果像mysql 写 int(1) 属于语法错误
+### reflect 反射
+1. 获取类型 reflect.TypeOf(x) reflect.TypeOf(x).Kind()
+
+
+### CGO
+
+### unsafe
