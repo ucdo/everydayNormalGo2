@@ -47,6 +47,15 @@
     2. make([]int) 
     3. 数组切片 
     4. 切片再切片
+11. x... 切片解构
+
+### map
+1. hashmap key-value 像PHP的数组一样
+2. m := make(map[int]string)
+3. if v,ok := m[key];ok{} // 安全取值
+
+### pointer 指针
+1. var t = 1      var p *int = &t      *p = 9      // t = 9
 
 ### string
 1. 字符串时不可变的。尝试修改字符串会导致编译错误
@@ -66,7 +75,20 @@
 ### for range
 1. for range slice/map时,创建了一个新的变量来存储当前迭代的元素的副本
 
+### switch 
+1. 执行完case 之后默认break,如果想继续执行需要加 fallthrough
+
 ## 进阶
+
+### error
+1. 自定义错误： errors.New("xx")
+
+### panic
+1. 预料之外的错误： 
+   1. out of index: 数组越界
+
+### recover
+1. [数组越界以及恢复](./Guru/recover/main.go)
 
 ### reflect 反射
 1. 获取类型 reflect.TypeOf(x) reflect.TypeOf(x).Kind()
