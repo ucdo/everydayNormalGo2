@@ -90,6 +90,14 @@
 ### recover
 1. [数组越界以及恢复](./Guru/recover/main.go)
 
+### interface
+1. 可以代表任何类型的数据。 exp: func x(x interface{}){} // 接收任何类型的参数
+2. 定义一组方法，实现所有方法则表示实现了这个接口
+3. 跟PHP的区别：
+   1. PHP需要implement，然后实现规定的所有方法
+   2. GO是实现所有这个接口的方法，才算实现这个接口
+4. 
+
 ### reflect 反射
 1. 获取类型 reflect.TypeOf(x) reflect.TypeOf(x).Kind()
 
