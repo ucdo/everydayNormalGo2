@@ -12,6 +12,7 @@ func (s *student) hello(name string) {
 }
 
 func main() {
+	// 即可以通过实例名，student调用student上
 	s := &student{name: "Tom"}
 	s.hello("jack")
 }
