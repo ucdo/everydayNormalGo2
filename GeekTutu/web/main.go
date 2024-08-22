@@ -35,21 +35,24 @@ import (
 //}
 
 func main() {
-	e := gee.New()
-	e.GET("/", func(e *gee.Context) {
-		e.HTML(http.StatusOK, "<h1>Hello Gee</h1>")
+	r := gee.New()
+	r.GET("/", func(c *gee.Context) {
+		c.HTML(http.StatusOK, "<h1>Hello Gee</h1>")
 	})
 
-	e.GET("/hello", func(e *gee.Context) {
-		e.Json(http.StatusOK, gee.H{
-			"message": "Hello Gee",
-			"data":    "",
-		})
+	r.GET("/hello", func(c *gee.Context) {
+		// expect /hello?name=geektutu
+		c.String(http.StatusOK, "hello %s, you're at %s\n", c.Query("name"), c.URL)
 	})
 
-	e.GET("/string", func(e *gee.Context) {
-		e.String(http.StatusOK, "Hello Gee >_<.%s", "   |-----|")
+	r.GET("/hello/:name", func(c *gee.Context) {
+		// expect /hello/geektutu
+		c.String(http.StatusOK, "hello %s, you're at %s\n", c.Param("name"), c.URL)
 	})
 
-	e.Run(":8080")
+	r.GET("/assets/*filepath", func(c *gee.Context) {
+		c.Json(http.StatusOK, gee.H{"filepath": c.Param("filepath")})
+	})
+
+	r.Run(":9999")
 }

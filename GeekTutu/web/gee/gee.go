@@ -14,6 +14,7 @@ type Engine struct {
 
 // 实现ServeHTTP方法
 // 路由接管了解析和操作
+// 这里是每个请求都会到这里来
 func (e *Engine) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	cxt := NewContext(w, r)
 	e.router.handle(cxt)

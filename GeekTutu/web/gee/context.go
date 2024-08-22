@@ -15,6 +15,7 @@ type Context struct {
 	URL    string
 	Method string
 	Status int
+	Params map[string]string
 }
 
 // NewContext 新建上下文。按理来说是每个请求新建一个上下文
@@ -25,6 +26,11 @@ func NewContext(w http.ResponseWriter, r *http.Request) *Context {
 		URL:    r.URL.Path,
 		Method: r.Method,
 	}
+}
+
+// Param 路由参数访问
+func (c *Context) Param(key string) string {
+	return c.Params[key]
 }
 
 // PostFrom 从post form 获取数据
