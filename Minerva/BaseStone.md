@@ -340,6 +340,12 @@ print	println real	recover string  true	uint	uint8	uintptr
     pp := new(s)
     *pp = s{a:777}
     ...
+8. 指针接受者：
+    1. 需要修改接收者中的值
+    2. 接收者拷贝代价比较大的对象
+    3. 保持一致性： 如果某个方法使用了指针接收者，那么其他方法也应该使用指针接收者
+9. 值接收者：
+
 ```
 
 ### json

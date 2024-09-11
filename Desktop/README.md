@@ -1,6 +1,8 @@
 ## 前置条件
 1. 安装go
 2. 安装MingW 64bit
+3. 设置 ```go env -w GOBIN=\path\to\goinstallpath\bin```
+4. 执行 ```go install fyne.io/fyne/v2/cmd/fyne@latest```
 
 ## 运行
 1. 定义 一个app  appx:= app.New() . 额不能叫app因为和导入的包同名了
