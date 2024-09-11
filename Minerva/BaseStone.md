@@ -568,7 +568,7 @@ print	println real	recover string  true	uint	uint8	uintptr
 17. 在实现interface定义的方法是，参数、类型、返回值要保持一致才能算是实现
 ```
 
-## gorountine 
+## goroutine 
 ```
 1. 跟踪调试并发程序还是很困难
 2. 线性程序中形成的直觉往往会使我们误入歧途
