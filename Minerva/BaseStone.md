@@ -572,6 +572,9 @@ print	println real	recover string  true	uint	uint8	uintptr
 15. 接口设计: ask only for what you need（只考虑你需要的东西）
 16. 并不是任何事物都需要被当作一个对象，独立的函数或者未封装的数据类型也各有他们的好处
 17. 在实现interface定义的方法是，参数、类型、返回值要保持一致才能算是实现
+18. 接口是引用类型
+19. 由类型和值构成
+20. 类型断言 value,ok := x.(Type) if ok{} //断言成功则获取对应的值，否则是对应类型的零值
 ```
 
 ## goroutine 
@@ -821,4 +824,7 @@ f = float64('a')
     fmt.Println("type:",reflect.TypeOf(x)) // type: int
     fmt.Println("value:", reflect.ValueOf(x)) // value: 1
 3. reflect.Indirect
+4. v := reflect.TypeOf(x) v.Name() v.Kind()
+5. 对于复合类型 v.Name() 是空
+
 ```

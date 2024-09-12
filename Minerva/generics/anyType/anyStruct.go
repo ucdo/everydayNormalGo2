@@ -57,7 +57,7 @@ func (l *ListIter[T]) Value() T {
 	return empty
 }
 
-// 其他的
+// Fn 其他的
 type Fn[A, B any] func(A) B
 
 type MyInt[T fmt.Stringer] int
@@ -73,12 +73,12 @@ type it2 interface {
 	int
 }
 
-// 这里的T可以是int，也可以是int的别名
+// Test 这里的T可以是int，也可以是int的别名
 func Test[T it](b T) {
 	fmt.Println(b)
 }
 
-// 这里的T只能是int类型，不能是任何形式的别名
+// Test2 这里的T只能是int类型，不能是任何形式的别名
 func Test2[T it2](b T) {
 	fmt.Println(b)
 }
@@ -114,7 +114,7 @@ func AnyMax[T typeCollect](a, b T) T {
 	return b
 }
 
-// T 关联的类型集合为所有实现了 fmt.Stringer 接口的类型
+// JoinSlice T 关联的类型集合为所有实现了 fmt.Stringer 接口的类型
 func JoinSlice[T fmt.Stringer](elements []T, separator string) string {
 	var ret string
 	for k, v := range elements {
@@ -127,12 +127,12 @@ func JoinSlice[T fmt.Stringer](elements []T, separator string) string {
 	return ret
 }
 
-// 测试泛型类型断言
+// Float 测试泛型类型断言
 type Float interface {
 	~float32 | ~float64
 }
 
-// 这里的类型断言是断言的动态类型，而非底层类型
+// NewtonSqrt 这里的类型断言是断言的动态类型，而非底层类型
 func NewtonSqrt[T Float](v T) {
 	var iterations int
 	switch (interface{})(v).(type) {
@@ -147,7 +147,7 @@ func NewtonSqrt[T Float](v T) {
 	fmt.Println(iterations)
 }
 
-// 使用反射来判断类型，无疑更合理，因为这里接受的是类似基础类型（即基础类型别名）
+// NewtonSqrt2 使用反射来判断类型，无疑更合理，因为这里接受的是类似基础类型（即基础类型别名）
 func NewtonSqrt2[T Float](v T) {
 	var iterations int
 	// switch (interface{})(v).(type) {
