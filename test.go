@@ -15,20 +15,28 @@ func main() {
 	//hanoi(n, 1, 3, 2)
 	//fmt.Println("start at:", start, "\n end at:", time.Now())
 	//testEqual()
-	_ = [][]int{
-		{1, 2, 3, 3, 1},
-		{2, 2, 1},
-		{3, 3, 3, 3},
-		{3, 3, 7, 2, 5, 8, 4, 6, 8, 1},
-		{6, 1, 1, 9, 8, 11},
-		{9, 1, 4, 7, 3, 21, 88, 5, 8, 11, 6},
+	//test := [][]int{
+	//	{0, 0, 1},
+	//	//{2, 2, 1},
+	//	//{3, 3, 3, 3},
+	//	//{3, 3, 7, 2, 5, 8, 4, 6, 8, 1},
+	//	//{6, 1, 1, 9, 8, 11},
+	//	//{9, 1, 4, 7, 3, 21, 88, 5, 8, 11, 6},
+	//}
+
+	test := [][]byte{
+		{'1', '1', '1', '1', '0'},
+		{'1', '1', '0', '1', '0'},
+		{'1', '1', '0', '0', '0'},
+		{'0', '0', '0', '0', '0'},
 	}
 
+	fmt.Println(numIslands(test))
 	//for _, v := range test {
-	//	fmt.Println(v, findDuplicate(v))
+	//	fmt.Println(v, numIslands(test))
 	//}
 	//
-	scanDir()
+	//scanDir()
 	//a := []int{1}
 	//fmt.Println(a[2])
 
@@ -219,4 +227,97 @@ func scanDir() {
 	}
 	fmt.Println(folder)
 	fmt.Println(count)
+}
+
+func testSlice(nums []int) []int {
+	// 1. 首先想到的是双指针，分别指向开头和结尾
+	// 2. 当头部指针有为0时，截取前面的部分，并把0加入最后
+	// 3. 这里需要注意的是，两根指针的移动
+	// 4. nums切片是 [:) 左闭右开
+	//if len(nums) == 1 {
+	//	return nums
+	//}
+	//
+	//left, right := 0, len(nums)-1
+	//// 两个指针相遇则结束了
+	//for left < right {
+	//	if nums[left] != 0 {
+	//		left++
+	//		continue
+	//	}
+	//
+	//	nums = append(nums[:left], append(nums[left+1:], nums[left:left+1]...)...)
+	//	if nums[right] != 0 {
+	//		left++
+	//	}
+	//	right--
+	//}
+
+	slow, fast := 0, 0
+	// 1. 快指针一直移动到第一个非0的地方
+	// 2. 慢指针一直移动到以一个为0的地方
+	// 3. 然后交换位置
+	// 4. fast再移动，slow再移动
+
+	// slow 一定会移动到最后一步吗
+	for slow < len(nums) {
+		if nums[fast] == 0 {
+			slow = fast
+			fast++
+		}
+
+		// 避免越界
+		if fast >= len(nums) {
+			return nums
+		}
+
+		// 同时满足时才进行交换
+		if nums[fast] != 0 && nums[slow] == 0 {
+			nums[slow], nums[fast] = nums[fast], nums[slow]
+		}
+	}
+
+	return nums
+}
+
+func numIslands(grid [][]byte) int {
+	row := len(grid)
+	if row == 0 {
+		return 0
+	}
+	col := len(grid[0])
+
+	gridNum := 0
+	for r := 0; r < row; r++ {
+		for c := 0; c < col; c++ {
+			if grid[r][c] == '1' {
+				gridNum++
+				isGrid(&grid, r, c)
+			}
+		}
+	}
+	return gridNum
+}
+
+// 说的是把遍历了的为 1 的全部设置为 0
+func isGrid(grid *[][]byte, r, c int) {
+	row := len(*grid)      // 行
+	col := len((*grid)[0]) // 列
+	//log.Panic(row, col)
+	(*grid)[r][c] = 0
+	if r-1 >= 0 && (*grid)[r-1][c] == '1' {
+		isGrid(grid, r-1, c)
+	}
+
+	if r+1 < row && (*grid)[r+1][c] == '1' {
+		isGrid(grid, r+1, c)
+	}
+
+	if c-1 >= 0 && (*grid)[r][c-1] == '1' {
+		isGrid(grid, r, c-1)
+	}
+
+	if c+1 < col && (*grid)[r][c+1] == '1' {
+		isGrid(grid, r, c+1)
+	}
 }
