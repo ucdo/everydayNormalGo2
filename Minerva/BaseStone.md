@@ -826,5 +826,5 @@ f = float64('a')
 3. reflect.Indirect
 4. v := reflect.TypeOf(x) v.Name() v.Kind()
 5. 对于复合类型 v.Name() 是空
-
+6. reflect.TypeOf(x).Kind() 可以用switch case 来获取类型
 ```

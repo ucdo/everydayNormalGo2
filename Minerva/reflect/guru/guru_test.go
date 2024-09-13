@@ -9,3 +9,9 @@ func TestReflectType(t *testing.T) {
 	reflectType("false")
 	reflectType([3]int{1})
 }
+
+func TestModify(t *testing.T) {
+	a := 100
+	reflectType(a)
+	t.Log(a)
+}
