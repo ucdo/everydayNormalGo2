@@ -1,3 +1,91 @@
+# TODO 有时间来整理一下吧，顺便复习了
+
+# 目录
+
+- [GO](#go)
+    - [最基础](#最基础)
+    - [并发](#并发)
+        - [关键字 go chan](#关键字-go-chan)
+        - [无缓冲chan](#无缓冲chan)
+        - [带缓冲channel死锁演示](#带缓冲channel死锁演示)
+    - [关键字](#关键字)
+    - [预定义标识符](#预定义标识符)
+    - [执行/编译](#执行编译)
+    - [package](#package)
+    - [作用域](#作用域)
+    - [生命周期](#生命周期)
+    - [编译器](#编译器)
+    - [基础类型](#基础类型)
+        - [整型 int](#整型-int)
+        - [浮点型 float](#浮点型-float)
+        - [复数 complex](#复数-complex)
+        - [布尔型 bool](#布尔型-bool)
+        - [字符串 string](#字符串-string)
+        - [字节 []byte](#字节-byte)
+        - [常量 const](#常量-const)
+    - [复合类型](#复合类型)
+        - [数组](#数组)
+        - [slice](#slice)
+        - [map](#map)
+    - [结构体 struct](#结构体-struct)
+        - [json](#json)
+    - [函数 func](#函数-func)
+    - [匿名函数](#匿名函数)
+    - [可变参数](#可变参数)
+    - [defer](#defer)
+    - [panic](#panic)
+- [面向对象](#面向对象)
+    - [继承](#继承)
+    - [接口 interface](#接口-interface)
+    - [多态](#多态)
+    - [鸭子类型](#鸭子类型)
+- [网络](#网络)
+    - [http](#http)
+    - [RPC](#rpc)
+    - [gRPC](#grpc)
+- [错误处理](#错误处理)
+    - [error](#error)
+    - [自定义错误](#自定义错误)
+    - [错误链](#错误链)
+- [测试](#测试)
+    - [单元测试](#单元测试)
+    - [性能测试](#性能测试)
+    - [覆盖率](#覆盖率)
+- [包管理](#包管理)
+    - [go modules](#go-modules)
+    - [vendoring](#vendoring)
+- [工具](#工具)
+    - [go fmt](#go-fmt)
+    - [go vet](#go-vet)
+    - [golint](#golint)
+    - [goimports](#goimports)
+    - [gofumpt](#gofumpt)
+    - [其他工具](#其他工具)
+- [Go 内存模型](#go-内存模型)
+    - [栈与堆](#栈与堆)
+    - [指针逃逸分析](#指针逃逸分析)
+- [调度器](#调度器)
+    - [Goroutine 调度](#goroutine-调度)
+    - [抢占式调度](#抢占式调度)
+    - [并发原语](#并发原语)
+- [垃圾回收](#垃圾回收)
+    - [GC 机制](#gc-机制)
+    - [GC 调优](#gc-调优)
+- [常见的 Go 语言问题](#常见的-go-语言问题)
+    - [数据竞争](#数据竞争)
+    - [并发死锁](#并发死锁)
+    - [性能瓶颈](#性能瓶颈)
+- [最佳实践](#最佳实践)
+    - [代码风格](#代码风格)
+    - [错误处理最佳实践](#错误处理最佳实践)
+    - [并发编程最佳实践](#并发编程最佳实践)
+    - [测试最佳实践](#测试最佳实践)
+- [高阶内容](#高阶内容)
+    - [插件系统](#插件系统)
+    - [反射](#反射)
+    - [泛型](#泛型)
+    - [unsafe 包](#unsafe-包)
+
 # GO
 
 ## 最基础
@@ -424,7 +512,7 @@ print	println real	recover string  true	uint	uint8	uintptr
 
 ```
 
-## 可变参数 -> 参数的数量不确定
+## 可变参数
 
 ```
 1. sum(val ...int) 这里可以传多个int类型的参数
@@ -588,7 +676,7 @@ print	println real	recover string  true	uint	uint8	uintptr
 7. 
 ```
 
-## channel
+## channel [xx](concurrent/channel)
 
 ``````
 1. gorountine 的通讯机制
