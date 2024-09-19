@@ -3,8 +3,8 @@ package main
 import (
 	"fmt"
 	"math/rand"
+	"os"
 	"sync"
-	"time"
 )
 
 // 写个生产者，消费者模型
@@ -62,17 +62,27 @@ func startWork(n int, c chan *pro, r chan *result) {
 func printfCalc(r chan *result) {
 	for i := range r {
 		fmt.Printf("calculate result: id:%d value:%d sum:%d\n", i.pro.id, i.pro.value, i.sum)
-		time.Sleep(time.Second)
 	}
 
 }
 
 var wg sync.WaitGroup
 
+// TODO 实现完美优雅的退出
 func main() {
 	c := make(chan *pro, 20)
 	r := make(chan *result, 20)
+	e := make(chan string, 1)
+	go func() {
+		os.Stdin.Read(make([]byte, 1))
+		e <- "xx"
+	}()
+
 	go producer(c)
 	go startWork(20, c, r)
-	printfCalc(r)
+	go printfCalc(r)
+	select {
+	case <-e:
+		break
+	}
 }
