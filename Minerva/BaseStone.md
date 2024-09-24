@@ -790,8 +790,7 @@ print	println real	recover string  true	uint	uint8	uintptr
 
 
 
-## goroutine和线程
-
+## goroutine和线程 [md](./concurrent/Readme.md)
 ``````
 1. 动态栈
 	1. 每个os的线程都有一个固定大小的内存块（一般是2M）来当作栈
