@@ -396,6 +396,7 @@ print	println real	recover string  true	uint	uint8	uintptr
 9. map 之间也不能进行比较，除非nil 或者你就要手动写代码去比较
 10. map的key居然可以是结构体，吐了
 11. map的key用struct也无所谓，因为他又不是引用类型，改了也无所谓
+12. map 并发不安全
 ```
 
 跟PHParray的区别
@@ -665,7 +666,7 @@ print	println real	recover string  true	uint	uint8	uintptr
 20. 类型断言 value,ok := x.(Type) if ok{} //断言成功则获取对应的值，否则是对应类型的零值
 ```
 
-## goroutine 
+## goroutine [xx](concurrent/goroutine)
 ```
 1. 跟踪调试并发程序还是很困难
 2. 线性程序中形成的直觉往往会使我们误入歧途
@@ -732,7 +733,7 @@ print	println real	recover string  true	uint	uint8	uintptr
 
 
 
-## 并发
+## 并发和锁 [xx](concurrent/sync)
 
 ``````
 1. 什么是并发？不能确定x,y执行的先后顺序
@@ -761,6 +762,30 @@ print	println real	recover string  true	uint	uint8	uintptr
    1. 如果可能，将变量限定在goroutine内部
    2. 如果是多个goroutine都要访问的变量 ，使用互斥条件访问
 9. 有数据竞争的时候记得要加锁；并且加合适的锁。
+10. sync.Map{} 无需初始化，并发安全
+11. sync.Once 只执行一次
+    举个例子：
+    var one sync.Once
+    ...
+    func f(){}
+    
+    func main(){
+        one.Do(f)
+    }
+    // 如果f要接收参数可以这么写
+    
+    func f(i int){}
+    func closure(i int) func() {
+        return func(){
+            f(i)
+        }
+    }
+    
+    func main(){
+        x := closure(1)
+        one.Do(x)
+    }
+12. 有些问题并发高了才会出现
 ``````
 
 
