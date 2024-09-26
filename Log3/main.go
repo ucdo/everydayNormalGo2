@@ -2,7 +2,9 @@ package main
 
 import (
 	"Log2/myLog"
+	"fmt"
 	"sync"
+	"time"
 )
 
 var wg sync.WaitGroup
@@ -10,7 +12,9 @@ var wg sync.WaitGroup
 var Logger myLog.MyLogger
 
 func main() {
+	now := time.Now()
 	logger := myLog.NewFileLog("./main.cnf")
+	defer logger.Close()
 
 	for i := 0; i < 1e5; i++ {
 		wg.Add(1)
@@ -21,4 +25,5 @@ func main() {
 		}(i)
 	}
 	wg.Wait()
+	fmt.Println(time.Since(now))
 }

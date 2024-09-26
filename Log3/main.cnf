@@ -2,4 +2,4 @@
 log_level: debug
 file_path: ./runtime
 file_name: xxx.log
-file_size: 1000000
+file_size: 100000000

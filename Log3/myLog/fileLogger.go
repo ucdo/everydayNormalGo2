@@ -2,14 +2,12 @@ package myLog
 
 import (
 	"fmt"
-	"math/rand"
 	"os"
 	"path"
 	"reflect"
 	"runtime"
 	"strconv"
 	"strings"
-	"sync"
 	"time"
 )
 
@@ -19,6 +17,16 @@ type MyLog struct {
 	filePath    string
 	fileHandler *os.File
 	perFileSize int64
+	logChan     chan *logData
+}
+
+type logData struct {
+	LineNum  int
+	Msg      string
+	TimeStr  string
+	Level    string
+	File     string
+	FuncName string
 }
 
 type config struct {
@@ -31,8 +39,6 @@ type config struct {
 // 改造成channel 一步写入
 
 var buffSize int = 5e4
-var ch = make(chan string, buffSize) // 定义一个缓冲区为5万的channel
-var mp = sync.Map{}
 
 func (l *MyLog) getLogLevel(levelStr string) LogLevel {
 	level := strings.ToUpper(levelStr)
@@ -63,6 +69,7 @@ func NewFileLog(filePath string) *MyLog {
 		fileName:    cnf.FileName,
 		filePath:    cnf.FilePath,
 		perFileSize: int64(cnf.FileSize),
+		logChan:     make(chan *logData, buffSize),
 	}
 
 	l.level = l.getLogLevel(cnf.LogLevel)
@@ -73,7 +80,7 @@ func NewFileLog(filePath string) *MyLog {
 	}
 
 	l.fileHandler = fileHandler
-	go l.syncWrite()
+	//go l.asyncWrite()
 	return l
 }
 
@@ -177,52 +184,33 @@ func (l *MyLog) write(level LogLevel, format string, a ...interface{}) {
 	if l.level >= level {
 		return
 	}
-
-	// 在这里等，5万条了再写入
-	// 要包含时间，日志级别，调用的文件，调用的函数，信息
 	now := time.Now().Format("2006-01-02 15:04:05.0000")
-
 	funcName, file, line := RuntimeCaller()
+	msg := fmt.Sprintf(format, a...)
+	logData := &logData{
+		LineNum:  line,
+		Msg:      msg,
+		TimeStr:  now,
+		Level:    LevelName(level),
+		File:     file,
+		FuncName: funcName,
+	}
 
-	format = fmt.Sprintf("[%s] [%s] [%s:%s:%d]", now, LevelName(level), file, funcName, line) + format
-	logStr := fmt.Sprintf(format, a...)
-	key := fmt.Sprintf("%d_%d", time.Now().UnixNano(), rand.Int31n(1e6))
-	mp.Store(key, logStr)
-	ch <- key
-	//fmt.Fprintln(l.fileHandler, logStr)
+	// 这样写才不会阻塞，而是丢弃
+	select {
+	case l.logChan <- logData:
+	default:
+	}
 }
 
-func (l *MyLog) syncWrite() {
-	var logs []string
-	var writeCount = buffSize
+func (l *MyLog) asyncWrite() {
 	for {
 		select {
-		case key := <-ch:
-			logs = append(logs, key)
-
-			if len(logs) >= writeCount {
-				mtx.Lock()
-				tmp := logs[:writeCount]
-				logs = logs[writeCount:]
-				mtx.Unlock()
-
-				// 写入。清空
-				logStr := ""
-				for _, logKey := range tmp {
-					if value, ok := mp.Load(logKey); ok {
-						// 直接断言为字符串，如果失败，说明数据异常
-						if str, ok := value.(interface{}).(string); ok {
-							logStr += str + "\n"
-						} else {
-							fmt.Printf("Unexpected value type for key %s: %T\n", logKey, value)
-							// 可以添加更详细的错误处理，比如记录到错误日志
-						}
-						mp.Delete(logKey)
-					}
-				}
-				l.SizeCheck()
-				fmt.Fprintln(l.fileHandler, logStr)
-			}
+		case log := <-l.logChan:
+			format := fmt.Sprintf("[%s] [%s] [%s:%s:%d]",
+				log.TimeStr, log.Level, log.File, log.FuncName, log.LineNum) + log.Msg
+			l.SizeCheck()
+			fmt.Fprintln(l.fileHandler, format)
 		}
 	}
 }
